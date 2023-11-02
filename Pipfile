@@ -9,6 +9,7 @@ numpy = "*"
 torch = "*"
 fastapi = "*"
 lightning = "*"
+torch-geometric = "*"
 
 [dev-packages]
 jupyterlab = "*"

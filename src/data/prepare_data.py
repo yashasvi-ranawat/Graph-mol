@@ -19,7 +19,7 @@ def read_xyz(filename: str) -> Atoms:
     gap = float(comment[9])
     free_energy = float(comment[15])
     for i in range(tot_atoms):
-        line = data[2+i].replace("*^", "e").split()
+        line = data[2 + i].replace("*^", "e").split()
         symbols.append(line[0])
         positions.append([float(line[1]), float(line[2]), float(line[3])])
         charge.append(float(line[4]))
@@ -28,18 +28,15 @@ def read_xyz(filename: str) -> Atoms:
         symbols=symbols,
         positions=positions,
         charges=charge,
-        info={"gap": gap, "G": free_energy}
+        info={"gap": gap, "G": free_energy},
     )
 
 
-def prepare_data(folder: str, raw_dir: str, indx: int):
+def prepare_data(raw_dir: str, indx: int) -> dict:
     filename = f"dsgdb9nsd_{indx:0>6}.xyz"
     atoms: Atoms = read_xyz(os.path.join(raw_dir, filename))
     cutoffs = natural_cutoffs(atoms)
-    nl = NeighborList(cutoffs,
-                      skin=0.2,
-                      self_interaction=False,
-                      bothways=True)
+    nl = NeighborList(cutoffs, skin=0.2, self_interaction=False, bothways=True)
     nl.update(atoms)
     neighbor_matrix = nl.get_connectivity_matrix().toarray()
     bonds = []
@@ -47,29 +44,27 @@ def prepare_data(folder: str, raw_dir: str, indx: int):
         neighbor_list = np.where(array)[0]
         for j in neighbor_list:
             if i < j:
-                dist = np.sqrt(np.sum((atoms.positions[i, :] - atoms.positions[j, :])**2))
-                bonds.append([i, j, dist, atoms.numbers[i]])
-
-    with open(os.path.join(folder, f"{indx:0>6}_inp.pkl"), "wb") as fio:
-        pickle.dump(bonds, fio)
-
-    with open(os.path.join(folder, f"{indx:0>6}_targ.pkl"), "wb") as fio:
-        pickle.dump(
-            {
-                "G": atoms.info["G"],
-                "gap": atoms.info["gap"],
-                "c": atoms.get_initial_charges()
-            },
-            fio
-        )
+                dist = np.sqrt(
+                    np.sum((atoms.positions[i, :] - atoms.positions[j, :]) ** 2)
+                )
+                bonds.append([i, j, dist])
+    return {
+        "G": atoms.info["G"],
+        "gap": atoms.info["gap"],
+        "c": atoms.get_initial_charges(),
+        "bonds": bonds,
+        "z": atoms.numbers,
+    }
 
 
-def main():
+def main() -> None:
     raw_dir = os.path.join("data", "raw")
     folder = os.path.join("data", "processed")
     indices = [_ for _ in range(1, 133886)]
     for indx in tqdm(indices):
-        prepare_data(folder, raw_dir, indx)
+        dict_ = prepare_data(raw_dir, indx)
+        with open(os.path.join(folder, f"{indx:0>6}.pkl"), "wb") as fio:
+            pickle.dump(dict_, fio)
 
 
 if __name__ == "__main__":

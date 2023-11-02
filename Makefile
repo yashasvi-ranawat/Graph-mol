@@ -8,10 +8,12 @@ docker-build:
 
 fetch-data:
 	echo $@
+	mkdir -p data/raw
 	cd data/raw; curl -O https://s3-eu-west-1.amazonaws.com/pstorage-npg-968563215/3195389/dsgdb9nsd.xyz.tar.bz2; tar -xvf dsgdb9nsd.xyz.tar.bz2
 
 prepare-data: fetch-data setup-env
 	echo $@
+	cd data; rm -r processed; mkdir processed
 	pipenv run python src/data/prepare_data.py
 	cd data; rm -r raw; mkdir raw
 
