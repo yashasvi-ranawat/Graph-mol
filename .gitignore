@@ -107,3 +107,5 @@ ENV/
 # data
 data/processed/
 data/raw/
+# training
+ckpts
