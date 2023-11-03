@@ -18,7 +18,7 @@ prepare-data: fetch-data setup-env
 	cd data; rm -r raw; mkdir raw
 
 black: setup-env
-	pipenv run black --exclude data .
+	pipenv run black --exclude="(processed|raw)" .
 
 setup-env: Pipfile.lock
 	pipenv sync --dev
