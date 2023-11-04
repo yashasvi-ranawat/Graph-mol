@@ -35,7 +35,7 @@ class Dataset(data.Dataset):
             dim=0,
         ).type("torch.FloatTensor")
 
-        edge_index = torch.tensor(dict_["bonds"])[:, :2].t().to(torch.int64)
+        edge_index = torch.tensor(dict_["bonds"])[:, :2].t().type(torch.int64)
 
         edge_attr = 1 / torch.tensor(dict_["bonds"])[:, 2:].type(torch.FloatTensor) ** 2
 

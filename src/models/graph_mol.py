@@ -23,22 +23,24 @@ class TransformerShell(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x, edge_index, edge_attr):
-        x += self.dropout(self.norm0(self.transformer(x, edge_index, edge_attr)))
-        x += self.dropout(self.norm1(self.linear(x)))
+        x = x + self.dropout(self.norm0(self.transformer(x, edge_index, edge_attr)))
+        x = x + self.dropout(self.norm1(self.linear(x)))
         return x
 
 
 class GraphMol(nn.Module):
     def __init__(self, in_channel, n_channel, n_heads, n_layers):
         super(GraphMol, self).__init__()
-        assert n_channel % n_heads == 0
         self.precondition = nn.Sequential(
             nn.Linear(in_channel, n_channel),
             nn.LeakyReLU(),
             nn.Linear(n_channel, n_channel),
             nn.LeakyReLU(),
+            nn.Linear(n_channel, n_channel),
         )
-        self.trans = [TransformerShell(n_heads, n_channel) for _ in range(n_layers)]
+        self.trans = nn.ModuleList(
+            [TransformerShell(n_heads, n_channel) for _ in range(n_layers)]
+        )
         self.charge = nn.Sequential(
             nn.Linear(n_channel, n_channel),
             nn.LeakyReLU(),
@@ -64,7 +66,6 @@ class GraphMol(nn.Module):
     def forward(self, x, edge_index, edge_attr, batch=None):
         if batch is None:
             batch = torch.zeros(x.shape[0], dtype=torch.int64).to(x.device)
-        n_size = x.shape[0]
         x = self.precondition(x)
         for trans in self.trans:
             x = trans(x, edge_index, edge_attr)
@@ -101,40 +102,40 @@ class GraphModel(pl.LightningModule):
     def training_step(self, batch):
         G, gap, charge = self(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
 
-        G_loss = (G - batch.G).abs().mean()
-        gap_loss = (gap - batch.gap).abs().mean()
-        c_loss = (charge - batch.c).abs().mean()
+        G_loss = torch.mean(torch.abs(G - batch.G))
+        gap_loss = torch.mean(torch.abs(gap - batch.gap))
+        c_loss = torch.mean(torch.abs(charge - batch.c))
 
         loss = G_loss + gap_loss + c_loss
 
         # Logging
-        self.log("loss", loss)
-        self.log("G_loss", G_loss)
-        self.log("gap_loss", gap_loss)
-        self.log("c_loss", c_loss)
+        self.log("loss", loss, batch_size=batch.G.shape[0])
+        self.log("G_loss", G_loss, batch_size=batch.G.shape[0])
+        self.log("gap_loss", gap_loss, batch_size=batch.G.shape[0])
+        self.log("c_loss", c_loss, batch_size=batch.G.shape[0])
         return loss
 
     def validation_step(self, batch):
         G, gap, charge = self(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
 
-        G_loss = (G - batch.G).abs().mean()
-        gap_loss = (gap - batch.gap).abs().mean()
-        c_loss = (charge - batch.charge).abs().mean()
+        G_loss = torch.mean(torch.abs(G - batch.G))
+        gap_loss = torch.mean(torch.abs(gap - batch.gap))
+        c_loss = torch.mean(torch.abs(charge - batch.c))
 
         loss = G_loss + gap_loss + c_loss
 
-        self.log("val_loss", loss)
-        self.log("val_G_loss", G_loss)
-        self.log("val_gap_loss", gap_loss)
-        self.log("val_c_loss", c_loss)
+        self.log("val_loss", loss, batch_size=batch.G.shape[0])
+        self.log("val_G_loss", G_loss, batch_size=batch.G.shape[0])
+        self.log("val_gap_loss", gap_loss, batch_size=batch.G.shape[0])
+        self.log("val_c_loss", c_loss, batch_size=batch.G.shape[0])
 
     def test_step(self, batch):
         G, gap, charge = self(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
 
-        G_loss = (G - batch.G).abs().mean()
-        gap_loss = (gap - batch.gap).abs().mean()
-        c_loss = (charge - batch.charge).abs().mean()
+        G_loss = torch.mean(torch.abs(G - batch.G))
+        gap_loss = torch.mean(torch.abs(gap - batch.gap))
+        c_loss = torch.mean(torch.abs(charge - batch.c))
 
         loss = G_loss + gap_loss + c_loss
 
-        self.log("test_loss", loss)
+        self.log("test_loss", loss, batch_size=batch.G.shape[0])

@@ -20,6 +20,9 @@ prepare-data: fetch-data setup-env
 jupyter: setup-env
 	pipenv run jupyter lab
 
+train: setup-env
+	pipenv run python src/training.py
+
 black: setup-env
 	pipenv run black --exclude="(processed|raw)" .
 
