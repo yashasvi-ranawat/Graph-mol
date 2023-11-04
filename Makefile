@@ -17,6 +17,9 @@ prepare-data: fetch-data setup-env
 	pipenv run python src/data/prepare_data.py
 	cd data; rm -r raw; mkdir raw
 
+jupyter: setup-env
+	pipenv run jupyter lab
+
 black: setup-env
 	pipenv run black --exclude="(processed|raw)" .
 

@@ -33,8 +33,7 @@ class Dataset(data.Dataset):
         x = torch.concat(
             [one_hot(torch.tensor(class_map[i]), 5).unsqueeze(0) for i in dict_["z"]],
             dim=0,
-        )
-        x.type("torch.FloatTensor")
+        ).type("torch.FloatTensor")
 
         edge_index = torch.tensor(dict_["bonds"])[:, :2].t().to(torch.int64)
 
