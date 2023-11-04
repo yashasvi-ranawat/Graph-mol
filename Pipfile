@@ -15,6 +15,7 @@ torch-geometric = "*"
 jupyterlab = "*"
 black = {extras = ["jupyter"], version = "*"}
 lightning = {extras = ["extra"], version = "*"}
+tensorboard = "*"
 
 [requires]
 python_version = "3.10"
