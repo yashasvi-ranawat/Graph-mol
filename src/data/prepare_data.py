@@ -6,9 +6,10 @@ import pickle
 import numpy as np
 
 
-def read_xyz(filename: str) -> Atoms:
-    with open(filename, "r") as fio:
-        data = fio.readlines()
+def read_xyz(filename: str, data: list[str] | None = None) -> Atoms:
+    if data is None:
+        with open(filename, "r") as fio:
+            data = fio.readlines()
 
     symbols: list[str] = []
     positions: list[list[float, float, float]] = []
@@ -32,9 +33,7 @@ def read_xyz(filename: str) -> Atoms:
     )
 
 
-def prepare_data(raw_dir: str, indx: int) -> dict:
-    filename = f"dsgdb9nsd_{indx:0>6}.xyz"
-    atoms: Atoms = read_xyz(os.path.join(raw_dir, filename))
+def prepare_data(atoms: Atoms) -> dict:
     cutoffs = natural_cutoffs(atoms)
     nl = NeighborList(cutoffs, skin=0.2, self_interaction=False, bothways=True)
     nl.update(atoms)
@@ -62,7 +61,9 @@ def main() -> None:
     folder = os.path.join("data", "processed")
     indices = [_ for _ in range(1, 133886)]
     for indx in tqdm(indices):
-        dict_ = prepare_data(raw_dir, indx)
+        filename = f"dsgdb9nsd_{indx:0>6}.xyz"
+        atoms = read_xyz(os.path.join(raw_dir, filename))
+        dict_ = prepare_data(atoms)
         with open(os.path.join(folder, f"{indx:0>6}.pkl"), "wb") as fio:
             pickle.dump(dict_, fio)
 
