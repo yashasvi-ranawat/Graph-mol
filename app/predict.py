@@ -67,7 +67,7 @@ def predict(file_: list[str]):
     return {
         "G": G.tolist()[0][0],
         "gap": gap.tolist()[0][0],
-        "charge": charge.squeeze(1).numpy(),
+        "charge": charge.squeeze(1).numpy().tolist(),
         "G_loss": G_loss,
         "gap_loss": gap_loss,
         "charge_loss": charge_loss,

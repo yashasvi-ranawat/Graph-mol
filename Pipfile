@@ -10,6 +10,8 @@ torch = "*"
 fastapi = "*"
 lightning = "*"
 torch-geometric = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+python-multipart = "*"
 
 [dev-packages]
 jupyterlab = "*"
