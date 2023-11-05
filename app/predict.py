@@ -10,6 +10,7 @@ from torch.nn.functional import one_hot
 
 
 class_map = {1: 0, 6: 1, 7: 2, 8: 3, 9: 4}
+MODEL_PATH = "model.ckpt"
 
 
 def predict(file_: list[str]):
@@ -45,7 +46,7 @@ def predict(file_: list[str]):
     data = T.ToUndirected()(data)
 
     # model
-    model = GraphModel.load_from_checkpoint("model.ckpt")
+    model = GraphModel.load_from_checkpoint(MODEL_PATH)
     model.eval()
 
     # predict

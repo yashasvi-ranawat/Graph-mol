@@ -16,6 +16,7 @@ jupyterlab = "*"
 black = {extras = ["jupyter"], version = "*"}
 lightning = {extras = ["extra"], version = "*"}
 tensorboard = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.10"

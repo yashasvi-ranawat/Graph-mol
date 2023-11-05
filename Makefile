@@ -26,5 +26,8 @@ train: setup-env
 black: setup-env
 	pipenv run black --exclude="(processed|raw)" .
 
+test: setup-env
+	cd tests; pipenv run pytest .
+
 setup-env: Pipfile.lock
 	pipenv sync --dev
