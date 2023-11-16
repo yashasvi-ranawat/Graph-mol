@@ -44,3 +44,7 @@ The network can be deployed as a docker contatiner as:
 make docker-build
 make docker-run
 ```
+
+## Contributing & TODO
+
+To make contributions to the repository, check [Contributing.md](https://github.com/yashasvi-ranawat/Graph-mol/blob/master/Contributing.md)
