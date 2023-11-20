@@ -23,7 +23,7 @@ make prepare-data
 Training is performed using:
 
 ```sh
-make train
+make train model=graph_transformer
 ```
 
 The partition for testing, training and validation, and seed for training is preserved for consistent training.

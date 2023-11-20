@@ -64,6 +64,5 @@ documentation.
 ## TODO
 
 1. Add docs
-2. Implement multiple model handling
-3. Add [TokenGT](https://arxiv.org/pdf/2207.02505.pdf)
-4. Implement half precision 
+2. Add [TokenGT](https://arxiv.org/pdf/2207.02505.pdf)
+3. Implement half precision 

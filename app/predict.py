@@ -10,10 +10,10 @@ from torch.nn.functional import one_hot
 
 
 class_map = {1: 0, 6: 1, 7: 2, 8: 3, 9: 4}
-MODEL_PATH = "model.ckpt"
+MODEL_PATH = "model-{model}.ckpt"
 
 
-def predict(file_: list[str]):
+def predict(file_: list[str], model: str):
     """
     Args:
         :param file_: xyz file as a list of lines as read by readlines()
@@ -46,7 +46,7 @@ def predict(file_: list[str]):
     data = T.ToUndirected()(data)
 
     # model
-    model = GraphModel.load_from_checkpoint(MODEL_PATH)
+    model = GraphModel.load_from_checkpoint(MODEL_PATH.format(model=model))
     model.eval()
 
     # predict

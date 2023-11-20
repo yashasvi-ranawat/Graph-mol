@@ -1,4 +1,5 @@
 tag = graph_mol
+model ?= graph_transformer
 
 docker-run:
 	docker run --runtime nvidia --gpus all -p 8000:8000 $(tag)
@@ -21,7 +22,7 @@ jupyter: setup-env
 	pipenv run jupyter lab
 
 train: setup-env
-	pipenv run python src/training.py
+	pipenv run python src/training.py $(model)
 
 black: setup-env
 	pipenv run black --exclude="(processed|raw)" .
